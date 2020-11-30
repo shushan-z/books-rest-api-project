@@ -1,13 +1,6 @@
 const express = require('express');
+const books = require('../books-data/books.json')
 const router = express.Router();
-
-let books = [
-    { id: 1, title: 'Book 1', pages: 154, published: 1996 },
-    { id: 2, title: 'Book 2', pages: 218, published: 1987 },
-    { id: 3, title: 'Book 3', pages: 451, published: 1899 },
-    { id: 4, title: 'Book 4', pages: 268, published: 1974 },
-    { id: 5, title: 'Book 5', pages: 324, published: 1952 },
-];
 
 router.get('/', function (req, res) {
     res.status(200).json(books);
