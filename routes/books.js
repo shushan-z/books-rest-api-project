@@ -1,5 +1,6 @@
 const express = require('express');
 const books = require('../books-data/books.json')
+const { check, validationResult } = require('express-validator');
 const router = express.Router();
 
 router.get('/', function (req, res) {
@@ -18,22 +19,26 @@ router.get('/:id', function (req, res) {
     }
 });
 
-router.post('/', function (req, res) {
-    let bookIds = books.map(book => book.id);
+router.post('/',
+    check('title').notEmpty(),
+    function (req, res) {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ error: "title is required" });
+        }
+        let bookIds = books.map(book => book.id);
 
-    let newId = bookIds.length > 0 ? Math.max.apply(Math, bookIds) + 1 : 1;
+        let newId = bookIds.length > 0 ? Math.max.apply(Math, bookIds) + 1 : 1;
+        let newBook = {
+            id: newId,
+            title: req.body.title,
+            pages: req.body.pages,
+            published: req.body.published
+        };
 
-    let newBook = {
-        id: newId,
-        title: req.body.title,
-        pages: req.body.pages,
-        published: req.body.published
-    };
-
-    books.push(newBook);
-
-    res.status(201).json(newBook);
-});
+        books.push(newBook);
+        res.status(201).json(newBook);
+    });
 
 router.put('/:id', function (req, res) {
     let found = books.find(function (book) {
