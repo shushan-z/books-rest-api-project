@@ -1,6 +1,8 @@
 const express = require('express');
 const books = require('../books-data/books.json')
 const { check, validationResult } = require('express-validator');
+const fs = require('fs');
+
 const router = express.Router();
 
 router.get('/', function (req, res) {
@@ -37,6 +39,11 @@ router.post('/',
         };
 
         books.push(newBook);
+        let addedBook = JSON.stringify(books, null, 2);
+
+        fs.writeFile('./books-data/books.json', addedBook, (err) => {
+            if (err) throw err;
+        })
         res.status(201).json(newBook);
     });
 
@@ -54,6 +61,11 @@ router.put('/:id', function (req, res) {
         let targetIndex = books.indexOf(found);
 
         books.splice(targetIndex, 1, updated);
+
+        let editedBooks = JSON.stringify(books, null, 2);
+        fs.writeFile('./books-data/books.json', editedBooks, (err) => {
+            if (err) throw err;
+        })
         res.sendStatus(204);
     } else {
         res.sendStatus(404);
@@ -70,9 +82,16 @@ router.delete('/:id', function (req, res) {
         let targetIndex = books.indexOf(found);
 
         books.splice(targetIndex, 1);
-    }
+        
+        let delBooks = JSON.stringify(books, null, 2);
 
-    res.sendStatus(204);
+        fs.writeFile('./books-data/books.json', delBooks, (err) => {
+            if (err) throw err;
+        })
+        res.sendStatus(204);
+    } else {
+        res.sendStatus(404);
+    }
 });
 
 module.exports = router;
